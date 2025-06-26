@@ -1,0 +1,36 @@
+const int alarmPin = 11;     
+const int buttonPin = 12;
+
+bool alarmActive = false;
+bool lastButtonState = HIGH;
+bool sheepInDanger = true;
+
+void setup() {
+  pinMode(alarmPin, OUTPUT);
+  pinMode(buttonPin, INPUT_PULLUP);
+}
+
+void loop() {
+
+  if (sheepInDanger && !alarmActive) {
+    alarmActive = true;
+  }
+
+  bool currentButtonState = digitalRead(buttonPin);
+
+  if (lastButtonState == HIGH && currentButtonState == LOW) {
+    alarmActive = false;
+    sheepInDanger = false;
+    delay(200); 
+  }
+  lastButtonState = currentButtonState;
+
+  if (alarmActive) {
+    digitalWrite(alarmPin, HIGH);  
+    delay(3);                       
+    digitalWrite(alarmPin, LOW);   
+    delay(50);                     
+  } else {
+    digitalWrite(alarmPin, LOW);
+  }
+}

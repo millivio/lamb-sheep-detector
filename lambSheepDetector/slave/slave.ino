@@ -4,6 +4,7 @@
 
 // BLE
 SoftwareSerial BTSerial(10, 11);
+int baudRate = 9600;
 
 // alarm
 const int alarmPin = 8;     
@@ -116,7 +117,7 @@ void loop() {
     alarmActive = true;
   }
 
-  // fire alarm
+  // fire alarm in case of danger
   if(alarmActive) {
     digitalWrite(alarmPin, HIGH);  
     delay(3);                       
@@ -168,8 +169,8 @@ void setupAlarm()
 
 void setupSerials()
 {
-  Serial.begin(9600);
-  BTSerial.begin(9600);
+  Serial.begin(baudRate);
+  BTSerial.begin(baudRate);
 }
 
 void printSheepCount(int count)

@@ -29,19 +29,46 @@ void loop() {
 
   // check received data and print
   if(BTSerial.available()) {
-    char rx = BTSerial.read();
+    int rx = BTSerial.read();
+    Serial.print("integer: ");
     Serial.println(rx);
-    if(rx == 'd') // d for danger
+    Serial.print("char: ");
+    Serial.println((char)rx);
+    if((char)rx == 'd') // d for danger
     {
       sheepInDanger = true;
     }
-    else if(rx == 's') // s for sheep
+    else if((char)rx == 's') // s for sheep
     {
-      printSheepCount(BTSerial.read());
+      while(true)
+      {
+        rx = BTSerial.read();
+        if(rx != -1)
+          break;
+        delay(10);
+      }
+      
+      printSheepCount(rx);
+      Serial.print("integer: ");
+      Serial.println(rx);
+      Serial.print("char: ");
+      Serial.println((char)rx);
     }
-    else if(rx == 'l') // l for lamb
+    else if((char)rx == 'l') // l for lamb
     {
-      printLambCount(BTSerial.read());
+      while(true)
+      {
+        rx = BTSerial.read();
+        if(rx != -1)
+          break;
+        delay(10);
+      }
+
+      printLambCount(rx);
+      Serial.print("integer: ");
+      Serial.println(rx);
+      Serial.print("char: ");
+      Serial.println((char)rx);
     }
   }
 
@@ -64,6 +91,7 @@ void loop() {
     alarmActive = false;
     sheepInDanger = false; 
     digitalWrite(alarmPin, LOW);
+    BTSerial.write('f'); // f for fine
   }
   lastButtonState = currentButtonState;
 }

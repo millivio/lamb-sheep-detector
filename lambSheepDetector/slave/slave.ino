@@ -4,7 +4,6 @@
 
 // BLE
 SoftwareSerial BTSerial(10, 11);
-int baudRate = 9600;
 
 // alarm
 const int alarmPin = 8;     
@@ -20,72 +19,6 @@ LiquidCrystal_I2C lcd(0x27, 16, 2);
 int sheep_counter = 0;
 int lamb_counter = 0;
 
-byte earLeft[8] = {
-  0b00000,
-  0b00000,
-  0b00000,
-  0b00011,
-  0b11100,
-  0b10000,
-  0b01000,
-  0b00001
-};
-
-byte eyes[8] = {
-  0b00000,
-  0b00000,
-  0b00000,
-  0b11111,
-  0b00000,
-  0b00000,
-  0b00000,
-  0b10001
-};
-
-byte earRight[8] = {
-  0b00000,
-  0b00000,
-  0b00000,
-  0b11000,
-  0b00111,
-  0b00001,
-  0b00010,
-  0b10000
-};
-
-byte jawLeft[8] = {
-  0b00000,
-  0b00000,
-  0b00000,
-  0b00000,
-  0b00100,
-  0b00110,
-  0b00011,
-  0b00000
-};
-
-byte nose[8] = {
-  0b00000,
-  0b00000,
-  0b01110,
-  0b00100,
-  0b00100,
-  0b01010,
-  0b00000,
-  0b00000
-};
-
-byte jawRight[8] = {
-  0b00000,
-  0b00000,
-  0b00000,
-  0b00000,
-  0b00100,
-  0b01100,
-  0b11000,
-  0b00000
-};
-
 void setup() {
   setupSerials();
   setupAlarm();
@@ -94,7 +27,7 @@ void setup() {
  
 void loop() {
 
-  // check received data and act accordingly
+  // check received data and print
   if(BTSerial.available()) {
     char rx = BTSerial.read();
     Serial.println(rx);
@@ -140,6 +73,72 @@ void setupDisplay()
   lcd.init();
   lcd.backlight();
 
+  byte earLeft[8] = {
+    0b00000,
+    0b00000,
+    0b00000,
+    0b00011,
+    0b11100,
+    0b10000,
+    0b01000,
+    0b00001
+  };
+
+  byte eyes[8] = {
+    0b00000,
+    0b00000,
+    0b00000,
+    0b11111,
+    0b00000,
+    0b00000,
+    0b00000,
+    0b10001
+  };
+
+  byte earRight[8] = {
+    0b00000,
+    0b00000,
+    0b00000,
+    0b11000,
+    0b00111,
+    0b00001,
+    0b00010,
+    0b10000
+  };
+
+  byte jawLeft[8] = {
+    0b00000,
+    0b00000,
+    0b00000,
+    0b00000,
+    0b00100,
+    0b00110,
+    0b00011,
+    0b00000
+  };
+
+  byte nose[8] = {
+    0b00000,
+    0b00000,
+    0b01110,
+    0b00100,
+    0b00100,
+    0b01010,
+    0b00000,
+    0b00000
+  };
+
+  byte jawRight[8] = {
+    0b00000,
+    0b00000,
+    0b00000,
+    0b00000,
+    0b00100,
+    0b01100,
+    0b11000,
+    0b00000
+  };
+
   printSheepCount(sheep_counter);
   printLambCount(lamb_counter);
 
@@ -169,8 +168,8 @@ void setupAlarm()
 
 void setupSerials()
 {
-  Serial.begin(baudRate);
-  BTSerial.begin(baudRate);
+  Serial.begin(9600);
+  BTSerial.begin(9600);
 }
 
 void printSheepCount(int count)

@@ -8,7 +8,7 @@ const int SERVO_PIN = 10;  //PWM pin
 UltraSonicDistanceSensor sensor2(6, 7);  // Entry sensor 2
 UltraSonicDistanceSensor sensor1(4, 5);  // Entry sensor 1
 UltraSonicDistanceSensor lambValidationSensor(2, 3);  // Lamb confirm
-UltraSonicDistanceSensor sheepValidationSensor4(8, 9);  // Sheep confirm
+UltraSonicDistanceSensor sheepValidationSensor(8, 9);  // Sheep confirm
 
 #define THRESHOLD 4  // cm
 #define VALIDATION_DELAY 100  // ms

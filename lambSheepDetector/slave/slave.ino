@@ -8,10 +8,17 @@ SoftwareSerial BTSerial(10, 11);
 // alarm
 const int alarmPin = 8;     
 const int buttonPin = 2;
+const int ledButtonPin= 3; 
+const int ledControlPin =4;
+const int blueButtonPin = 5;
+const int blueLedPin  = 6;  // SIG1  – LED always on
+
 
 bool alarmActive = false;
 bool lastButtonState = HIGH;
 bool sheepInDanger = false;
+bool lastLedButtonState = HIGH;
+bool lastBlueBtnState  = HIGH;
 
 // display
 LiquidCrystal_I2C lcd(0x27, 16, 2);
@@ -48,7 +55,7 @@ void loop() {
         delay(10);
       }
       
-      printSheepCount(rx);
+      printSheepCount(rx, false);
       Serial.print("integer: ");
       Serial.println(rx);
       Serial.print("char: ");
@@ -64,7 +71,7 @@ void loop() {
         delay(10);
       }
 
-      printLambCount(rx);
+      printLambCount(rx, false);
       Serial.print("integer: ");
       Serial.println(rx);
       Serial.print("char: ");
@@ -79,21 +86,46 @@ void loop() {
 
   // fire alarm in case of danger
   if(alarmActive) {
-    digitalWrite(alarmPin, HIGH);  
+    digitalWrite(alarmPin, HIGH); 
+    digitalWrite(ledControlPin, HIGH); 
     delay(3);                       
     digitalWrite(alarmPin, LOW);   
     delay(50);                     
+  }else {
+
+    digitalWrite(ledControlPin, LOW); 
   }
 
-  // stop alarm if button is pressed
-  bool currentButtonState = digitalRead(buttonPin);
-  if(lastButtonState == HIGH && currentButtonState == LOW) {
-    alarmActive = false;
-    sheepInDanger = false; 
-    digitalWrite(alarmPin, LOW);
-    BTSerial.write('f'); // f for fine
+ bool currentBlueBtnState = digitalRead(blueButtonPin);
+
+  if (lastBlueBtnState == HIGH && currentBlueBtnState == LOW) {
+      BTSerial.write('r');    // r for reset
+      Serial.println("Reset sent");
+      printLambCount(0, true);
+      printSheepCount(0, true); 
   }
-  lastButtonState = currentButtonState;
+
+ bool currentButtonState = digitalRead(buttonPin);
+ bool currentLedButtonState = digitalRead(ledButtonPin);
+ 
+    if ((lastButtonState == HIGH && currentButtonState == LOW) ||
+
+        (lastLedButtonState == HIGH && currentLedButtonState == LOW)) {
+
+      alarmActive = false;
+
+      sheepInDanger = false;
+
+      digitalWrite(alarmPin, LOW);
+
+      BTSerial.write('f'); // f for fine
+
+    }
+ 
+ lastButtonState = currentButtonState;
+ lastLedButtonState = currentLedButtonState;
+ lastBlueBtnState = currentBlueBtnState;
+
 }
 
 void setupDisplay()
@@ -167,8 +199,8 @@ void setupDisplay()
     0b00000
   };
 
-  printSheepCount(sheep_counter);
-  printLambCount(lamb_counter);
+  printSheepCount(sheep_counter, false);
+  printLambCount(lamb_counter, false);
 
   lcd.createChar(0, earLeft);
   lcd.createChar(1, eyes);
@@ -192,6 +224,11 @@ void setupAlarm()
 {
   pinMode(alarmPin, OUTPUT);
   pinMode(buttonPin, INPUT_PULLUP);
+  pinMode(ledButtonPin, INPUT_PULLUP);
+  pinMode(ledControlPin, OUTPUT);
+  pinMode(blueButtonPin, INPUT_PULLUP);  
+  pinMode(blueLedPin,    OUTPUT); 
+  digitalWrite(blueLedPin, HIGH);  
 }
 
 void setupSerials()
@@ -200,36 +237,27 @@ void setupSerials()
   BTSerial.begin(9600);
 }
 
-void printSheepCount(int count)
+void printSheepCount(int count, bool reset)
 {
   lcd.setCursor(0, 0);
   lcd.print("Sheep: ");
   lcd.setCursor(8, 0);
+  if(reset){
+    lcd.print("     ");
+  }else {
   lcd.print(count);
+  }
 }
 
-void printLambCount(int count)
+void printLambCount(int count, bool reset)
 {
   lcd.setCursor(0, 1);
   lcd.print("Lamb: ");
   lcd.setCursor(8, 1);
+  if(reset){
+    lcd.print("     ");
+  }else
+  {
   lcd.print(count);
+  }
 }
-
-// find display address
-// void setup() {
-//   Wire.begin();
-//   Serial.begin(9600);
-// }
-
-// void loop() {
-//   for (byte address = 1; address < 127; address++) {
-//     Wire.beginTransmission(address);
-//     if (Wire.endTransmission() == 0) {
-//       Serial.print("I2C device found at 0x");
-//       Serial.println(address, HEX);
-//     }
-//     delay(5);
-//   }
-//   delay(1000);
-// }
